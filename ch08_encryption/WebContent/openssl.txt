@@ -1,3 +1,7 @@
+사설 보안인증서 생성 방법
+
+명령프롬프트 실행
+
 [keystore 폴더 내부에서]
 	// keystore(인증서 관리도구) 생성 
 keytool -genkey -alias tomcat -keyalg RSA -keypass 111111 -storepass 111111 -keystore .keystore -dname "CN=localhost, OU=OrgUnit, O=MyCompany, C=KR"
