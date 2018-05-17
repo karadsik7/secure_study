@@ -1,0 +1,28 @@
+[keystore 폴더 내부에서]
+	// keystore(인증서 관리도구) 생성 
+keytool -genkey -alias tomcat -keyalg RSA -keypass 111111 -storepass 111111 -keystore .keystore -dname "CN=localhost, OU=OrgUnit, O=MyCompany, C=KR"
+
+	// CSR파일 생성
+keytool -certreq -keyalg RSA -alias tomcat -keystore .keystore -file "../openssl/certreq.csr"
+
+	// CA 인증키 준비
+openssl genrsa -aes256 -out ca.key 1024
+
+	// 인증키(비밀키) 생성
+openssl req -config c:/openssl/openssl.cnf -new -x509 -days 365 -key ca.key -out ca.crt
+
+	// 인증서(공개키) 생성
+openssl x509 -req -CA ca.crt -CAkey ca.key -days 365 -in certreq.csr -out certreq.crt -CAcreateserial
+
+	// 인증키 임포트
+keytool -importcert -alias root -trustcacerts -keystore ../keystore/.keystore -file ca.crt
+
+	// 인증서 임포트
+keytool -importcert -alias tomcat -keystore ../keystore/.keystore -file certreq.crt
+
+	// https 및 인증서 적용 server.xml에
+	<Connector port="443" protocol="HTTP/1.1" SSLEnabled="true" schema="https"
+    maxThreads="150" secure="true" keystoreFile="/secure_study/keystore/.keystore" keystorePass="111111" 
+    clientAuth="false" sslProtocol="TLS" />
+	    
+	    
